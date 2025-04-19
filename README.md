@@ -13,5 +13,7 @@ Note: All executables will be in the `execs` directory.
 1. `smCount.cu` - counts the number of sms on all gpus.
 
 
+## Operations (Ops)
 
+1. `vecAdd.cu` - adds two vectors together.
 
