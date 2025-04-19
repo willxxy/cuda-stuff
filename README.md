@@ -10,7 +10,7 @@ Note: All executables will be in the `execs` directory.
 
 ## System Info
 
-1. `sm_count.cu` - counts the number of sms on all gpus.
+1. `smCount.cu` - counts the number of sms on all gpus.
 
 
 
