@@ -15,16 +15,16 @@ void check_cuda(cudaError_t result, char const *const func, const char *const fi
 }
 
 
-// CUDA kernel: C[i] = A[i] + B[i]
-__global__ void vecAddKernel(const float *A, const float *B, float *C, int n) {
+// CUDA kernel: C[i] = A[i] * B[i]
+__global__ void vecMultiplyKernel(const float *A, const float *B, float *C, int n) {
     int idx = blockIdx.x * blockDim.x + threadIdx.x;
     if (idx < n) {
-        C[idx] = A[idx] + B[idx];
+        C[idx] = A[idx] * B[idx];
     }
 }
 
 int main() {
-    const int n = 1<<20;                   // total elements (e.g. 1 048 576)
+    const int n = 1<<20;                   // total elements (e.g. 1 048 576)
     const size_t bytes = n * sizeof(float);
     std::cout << "Vector size (n): " << n << std::endl;
     std::cout << "Total bytes: " << bytes << std::endl;
@@ -67,7 +67,7 @@ int main() {
     int blockSize = 256;
     int gridSize  = (n + blockSize - 1) / blockSize;
     std::cout << "Launching kernel with grid size " << gridSize << " and block size " << blockSize << "..." << std::endl;
-    vecAddKernel<<<gridSize, blockSize>>>(d_A, d_B, d_C, n);
+    vecMultiplyKernel<<<gridSize, blockSize>>>(d_A, d_B, d_C, n);
     checkCudaErrors(cudaGetLastError()); // Check for errors during kernel launch
     std::cout << "Kernel launched. Synchronizing device..." << std::endl;
     checkCudaErrors(cudaDeviceSynchronize());
@@ -78,12 +78,12 @@ int main() {
     checkCudaErrors(cudaMemcpy(h_C, d_C, bytes, cudaMemcpyDeviceToHost));
     std::cout << "Result data copied to host." << std::endl;
 
-    // Sample additions
-    std::cout << "Sample additions:\n";
+    // Sample multiplications
+    std::cout << "Sample multiplications:\n";
     for (int i = 0; i < 8; ++i) {
         std::cout
         << "  h_A[" << i << "] = " << h_A[i]
-        << " + h_B[" << i << "] = " << h_B[i]
+        << " * h_B[" << i << "] = " << h_B[i]
         << " → h_C[" << i << "] = " << h_C[i]
         << "\n";
     }
@@ -92,7 +92,7 @@ int main() {
     std::cout << "Verifying result..." << std::endl;
     bool ok = true;
     for (int i = 0; i < n; ++i) {
-        float expected = h_A[i] + h_B[i];
+        float expected = h_A[i] * h_B[i];
         if (fabsf(h_C[i] - expected) > 1e-5) { // Use tolerance for float comparison
             printf("Mismatch at %d: %f (actual) != %f (expected)\n", i, h_C[i], expected);
             ok = false;
@@ -118,4 +118,4 @@ int main() {
 
     std::cout << "Execution finished." << std::endl;
     return ok ? 0 : 1;
-}
+} 

@@ -17,3 +17,4 @@ Note: All executables will be in the `execs` directory.
 
 1. `vecAdd.cu` - adds two vectors together.
 
+2. `vecMultiply.cu` - multiplies two vectors together.

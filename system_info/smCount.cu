@@ -1,4 +1,3 @@
-// sm_count.cu
 #include <stdio.h>
 #include <cuda_runtime.h>
 int main(){
